@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   data () {
     return {
@@ -32,7 +33,7 @@ export default {
         ],
         password: [
           { required: true, message: '请输入用户名', trigger: 'change' },
-          { min: 10, max: 14, message: '长度在 10 到 14 个字符', trigger: 'change' }
+          { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'change' }
         ]
       }
     }
@@ -43,12 +44,28 @@ export default {
       this.$refs.form.resetFields()
     },
     submitForm () {
-      this.$refs.form.validate(function (isvalid, obj) {
-        if (isvalid) {
-          console.log('发送ajax')
-        } else {
-          return false
-        }
+      this.$refs.form.validate(isvalid => {
+        if (!isvalid) { return false }
+        // 校验成功发送ajax
+        axios.post('http://localhost:8888/api/private/v1/login', this.form).then(res => {
+          // 解构
+          console.log(res.data)
+          const { meta: { status, msg }, data: { token } } = res.data
+          if (status === 200) {
+            console.log('登录成功')
+            this.$message({
+              message: '登录成功',
+              type: 'success',
+              duration: 3000
+            })
+            // 存储token
+            localStorage.setItem('token', token)
+            // 跳转到首页
+            this.$router.push({ name: '/index' })
+          } else {
+            this.$message.error(msg)
+          }
+        })
       })
     }
   }
