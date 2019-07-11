@@ -12,7 +12,7 @@ const router = new VueRouter({
       component: Index,
       name: 'index',
       children: [
-        { path: '/users', name: 'user', component: Users }
+        { path: '/users', name: 'users', component: Users }
       ] },
     { path: '/login', component: Login, name: 'login' }
   ]
