@@ -50,7 +50,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
       // 对请求错误做些什么
       return Promise.reject(error)
     })
-```    
+     ```      
   - 使用响应拦截器优化res.data问题  
     ```
           // 添加响应拦截器
