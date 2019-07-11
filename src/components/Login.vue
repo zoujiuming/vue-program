@@ -61,7 +61,7 @@ export default {
             // 存储token
             localStorage.setItem('token', token)
             // 跳转到首页
-            this.$router.push({ name: '/index' })
+            this.$router.push({ name: 'index' })
           } else {
             this.$message.error(msg)
           }
