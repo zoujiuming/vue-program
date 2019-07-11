@@ -1,7 +1,17 @@
 <template>
 <div class="users">
   <!-- 面包屑 -->
+  <el-breadcrumb separator-class="el-icon-arrow-right">
+  <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+  <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+</el-breadcrumb>
   <!-- 搜索栏 -->
+  <div style="margin: 15px 0;">
+    <el-input placeholder="请输入内容" v-model="query" class="input-with-select">
+    <el-button slot="append" icon="el-icon-search" @click="queryUser"></el-button>
+  </el-input>
+  <el-button type="success" style="margin-left:30px;" plain>添加用户</el-button>
+  </div>
   <!-- 表格 -->
       <el-table
       :data="tableData"
@@ -103,11 +113,24 @@ export default {
       // console.log(`当前页: ${val}`)
       this.pagenum = val
       this.getUrlList()
+    },
+    queryUser () {
+      this.pagenum = 1
+      this.getUrlList()
     }
   }
 }
 </script>
 
-<style>
+<style lang="less" scoped>
+  .el-breadcrumb {
+    padding-left: 10px;
+    height: 40px;
+    line-height: 40px;
+    background: #ddd;
+  }
+  .el-input {
+    width: 300px;
+  }
 
 </style>
