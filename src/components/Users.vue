@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 export default {
   data () {
     return {
@@ -81,7 +81,7 @@ export default {
   },
   methods: {
     getUrlList () {
-      axios.get('http://localhost:8888/api/private/v1/users', {
+      this.axios.get('users', {
         params: {
           query: this.query,
           pagenum: this.pagenum,
@@ -126,7 +126,7 @@ export default {
       })
         .then(() => {
           // 退出发送ajax
-          axios.delete(`http://localhost:8888/api/private/v1/users/${id}`, {
+          this.axios.delete(`users/${id}`, {
             headers: {
               Authorization: localStorage.getItem('token')
             }

@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 export default {
   data () {
     return {
@@ -47,7 +47,7 @@ export default {
       this.$refs.form.validate(isvalid => {
         if (!isvalid) { return false }
         // 校验成功发送ajax
-        axios.post('http://localhost:8888/api/private/v1/login', this.form).then(res => {
+        this.axios.post('login', this.form).then(res => {
           // 解构
           console.log(res.data)
           const { meta: { status, msg }, data: { token } } = res.data
