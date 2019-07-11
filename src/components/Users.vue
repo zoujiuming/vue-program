@@ -43,9 +43,9 @@
        <el-table-column
         prop="address"
         label="操作">
-        <template v-slot="scope">
+        <template v-slot:default="{row}">
           <el-button type="primary" icon="el-icon-edit" circle plain  size="small" ></el-button>
-          <el-button type="danger" icon="el-icon-delete" circle plain size="small" ></el-button>
+          <el-button @click="deleteUser(row.id)" type="danger" icon="el-icon-delete" circle plain size="small" ></el-button>
            <el-button type="success" icon="el-icon-edit"  plain size="small" round >分配角色</el-button>
         </template>
       </el-table-column>
@@ -117,6 +117,33 @@ export default {
     queryUser () {
       this.pagenum = 1
       this.getUrlList()
+    },
+    deleteUser (id) {
+      // console.log(id)
+      // 给提示
+      this.$confirm('你确定要退出吗?', '温馨提示', {
+        type: 'warning'
+      })
+        .then(() => {
+          // 退出发送ajax
+          axios.delete(`http://localhost:8888/api/private/v1/users/${id}`, {
+            headers: {
+              Authorization: localStorage.getItem('token')
+            }
+          }).then(res => {
+            if (res.data.meta.status === 200) {
+              this.$message.success('删除成功')
+              // 如果当前页被删除就剩下一条了,应该让pagenum -1
+              if (this.tableData === 1 && this.pagenum > 1) {
+                this.pagenum--
+              }
+              this.getUrlList()
+            }
+          })
+        })
+        .catch(() => {
+          this.$message('操作取消')
+        })
     }
   }
 }
