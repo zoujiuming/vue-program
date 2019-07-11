@@ -50,7 +50,7 @@ export default {
         this.axios.post('login', this.form).then(res => {
           // 解构
           console.log(res.data)
-          const { meta: { status, msg }, data: { token } } = res.data
+          const { meta: { status, msg }, data: { token } } = res
           if (status === 200) {
             console.log('登录成功')
             this.$message({

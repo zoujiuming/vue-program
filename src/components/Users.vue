@@ -86,14 +86,14 @@ export default {
           query: this.query,
           pagenum: this.pagenum,
           pagesize: this.pagesize
-        },
-        // 加上请求头token
-        headers: {
-          Authorization: localStorage.getItem('token')
         }
+        // 加上请求头token
+        // headers: {
+        //   Authorization: localStorage.getItem('token')
+        // }
       })
         .then(res => {
-          const { meta, data } = res.data
+          const { meta, data } = res
           if (meta.status === 200) {
             this.tableData = data.users
             this.total = data.total
@@ -121,17 +121,17 @@ export default {
     deleteUser (id) {
       // console.log(id)
       // 给提示
-      this.$confirm('你确定要退出吗?', '温馨提示', {
+      this.$confirm('你确定要删除吗?', '温馨提示', {
         type: 'warning'
       })
         .then(() => {
           // 退出发送ajax
           this.axios.delete(`users/${id}`, {
-            headers: {
-              Authorization: localStorage.getItem('token')
-            }
+            // headers: {
+            //   Authorization: localStorage.getItem('token')
+            // }
           }).then(res => {
-            if (res.data.meta.status === 200) {
+            if (res.meta.status === 200) {
               this.$message.success('删除成功')
               // 如果当前页被删除就剩下一条了,应该让pagenum -1
               if (this.tableData === 1 && this.pagenum > 1) {
