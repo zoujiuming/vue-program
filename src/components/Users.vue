@@ -7,10 +7,10 @@
 </el-breadcrumb>
   <!-- 搜索栏 -->
   <div style="margin: 15px 0;">
-    <el-input placeholder="请输入内容" v-model="query" class="input-with-select">
+    <el-input style="  width: 300px;" placeholder="请输入内容" v-model="query" class="input-with-select">
     <el-button slot="append" icon="el-icon-search" @click="queryUser"></el-button>
   </el-input>
-  <el-button type="success" style="margin-left:30px;" plain>添加用户</el-button>
+  <el-button @click="showAddDialog" type="success" style="margin-left:30px;" plain>添加用户</el-button>
   </div>
   <!-- 表格 -->
       <el-table
@@ -62,6 +62,31 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total">
     </el-pagination>
+ <!-- 添加框 -->
+<el-dialog
+  title="添加用户"
+  :visible.sync="addDialogVisible"
+  width="35%"
+>
+<el-form ref="addForm" :rules="rules" :model="addForm" label-width="80px" status-icon>
+  <el-form-item label="用户名" prop="username">
+    <el-input v-model="addForm.username"></el-input>
+  </el-form-item>
+   <el-form-item label="密码" prop="password">
+    <el-input v-model="addForm.password "></el-input>
+  </el-form-item>
+   <el-form-item label="邮箱"  prop="email">
+    <el-input v-model="addForm.email"></el-input>
+  </el-form-item>
+   <el-form-item label="手机" prop="mobile">
+    <el-input v-model="addForm.mobile"></el-input>
+  </el-form-item>
+</el-form>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="addDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="addUser">确 定</el-button>
+  </span>
+</el-dialog>
 </div>
 </template>
 
@@ -74,7 +99,31 @@ export default {
       query: '',
       pagenum: 1,
       pagesize: 2,
-      total: 0
+      total: 0,
+      addDialogVisible: false,
+      addForm: {
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
+      },
+      rules: {
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { min: 3, max: 6, message: '长度在 3 到 6 个字符', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
+        ],
+        email: [
+          { type: 'email', message: '请输入有效的邮箱', trigger: 'blur' }
+        ],
+        mobile: [
+          { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号', trigger: 'blur' }
+        ]
+
+      }
     }
   },
   created () {
@@ -146,9 +195,9 @@ export default {
           this.$message('操作取消')
         })
     },
-    changeState (user) {
+    changeState ({ id, mg_state: state }) {
       // console.log(user)
-      this.axios.put(`users/${user.id}/state/${user.mg_state}`).then(res => {
+      this.axios.put(`users/${id}/state/${state}`).then(res => {
         const { status, msg } = res.meta
         if (status === 200) {
           this.$message.success('修改状态成功')
@@ -156,9 +205,32 @@ export default {
           this.$message.error(msg)
         }
       })
+    },
+    showAddDialog () {
+      this.addDialogVisible = true
+    },
+    addUser () {
+      this.$refs.addForm.validate(valid => {
+        if (!valid) return false
+        // 成功就发送ajax 请求
+        this.axios.post('users', this.addForm).then(res => {
+          console.log(res)
+          const { status, msg } = res.meta
+          if (status === 201) {
+            this.$message.success('创建成功')
+            // 重置表单
+            this.$refs.addForm.resetFields()
+            // 对话框隐藏
+            this.addDialogVisible = false
+          } else {
+            this.$message.error(msg)
+          }
+        })
+      })
     }
   }
 }
+
 </script>
 
 <style lang="less" scoped>
@@ -167,9 +239,6 @@ export default {
     height: 40px;
     line-height: 40px;
     background: #ddd;
-  }
-  .el-input {
-    width: 300px;
   }
 
 </style>

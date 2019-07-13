@@ -13,8 +13,6 @@
     <el-container>
       <el-aside width="200px">
         <el-menu
-          default-active=""
-          class="el-menu-vertical-demo"
           background-color="#545c64"
           text-color="#fff"
           active-text-color="#ffd04b"
@@ -29,7 +27,7 @@
             <el-menu-item-group>
               <el-menu-item index="/users">
                 <i class="el-icon-menu"></i>
-                <span>用户列表</span>
+                <span slot="title">用户列表</span>
               </el-menu-item>
             </el-menu-item-group>
           </el-submenu>
