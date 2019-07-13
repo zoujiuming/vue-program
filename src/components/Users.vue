@@ -36,7 +36,8 @@
           <el-switch
             v-model="row.mg_state"
             active-color="#13ce66"
-            inactive-color="#ff4949">
+            inactive-color="#ff4949"
+            @change="changeState(row)">
           </el-switch>
         </template>
       </el-table-column>
@@ -144,6 +145,17 @@ export default {
         .catch(() => {
           this.$message('操作取消')
         })
+    },
+    changeState (user) {
+      // console.log(user)
+      this.axios.put(`users/${user.id}/state/${user.mg_state}`).then(res => {
+        const { status, msg } = res.meta
+        if (status === 200) {
+          this.$message.success('修改状态成功')
+        } else {
+          this.$message.error(msg)
+        }
+      })
     }
   }
 }
