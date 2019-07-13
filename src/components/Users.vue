@@ -45,7 +45,7 @@
         prop="address"
         label="操作">
         <template v-slot:default="{row}">
-          <el-button type="primary" icon="el-icon-edit" circle plain  size="small" ></el-button>
+          <el-button @click="showEditDialog(row)" type="primary" icon="el-icon-edit" circle plain  size="small" ></el-button>
           <el-button @click="deleteUser(row.id)" type="danger" icon="el-icon-delete" circle plain size="small" ></el-button>
            <el-button type="success" icon="el-icon-edit"  plain size="small" round >分配角色</el-button>
         </template>
@@ -66,8 +66,7 @@
 <el-dialog
   title="添加用户"
   :visible.sync="addDialogVisible"
-  width="35%"
->
+  width="35%">
 <el-form ref="addForm" :rules="rules" :model="addForm" label-width="80px" status-icon>
   <el-form-item label="用户名" prop="username">
     <el-input v-model="addForm.username"></el-input>
@@ -85,6 +84,30 @@
   <span slot="footer" class="dialog-footer">
     <el-button @click="addDialogVisible = false">取 消</el-button>
     <el-button type="primary" @click="addUser">确 定</el-button>
+  </span>
+</el-dialog>
+
+<!-- 修改框 -->
+<el-dialog
+  title="修改用户"
+  :visible.sync="editDialogVisible"
+  width="35%"
+>
+<el-form ref="editForm" :rules="rules" :model="editForm" label-width="80px" status-icon>
+  <el-form-item label="用户名" prop="username">
+    <!-- <el-input v-model="editForm.username"></el-input> -->
+    <el-tag type="info">{{editForm.username}}</el-tag>
+  </el-form-item>
+   <el-form-item label="邮箱"  prop="email">
+    <el-input placeholder="请输入用户邮箱"  v-model="editForm.email"></el-input>
+  </el-form-item>
+   <el-form-item label="手机" prop="mobile">
+    <el-input placeholder="请输入用户手机" v-model="editForm.mobile"></el-input>
+  </el-form-item>
+</el-form>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="editDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="editUser">确 定</el-button>
   </span>
 </el-dialog>
 </div>
@@ -110,7 +133,7 @@ export default {
       rules: {
         username: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
-          { min: 3, max: 6, message: '长度在 3 到 6 个字符', trigger: 'blur' }
+          { min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur' }
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },
@@ -123,6 +146,13 @@ export default {
           { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号', trigger: 'blur' }
         ]
 
+      },
+      editDialogVisible: false,
+      editForm: {
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
       }
     }
   },
@@ -225,6 +255,36 @@ export default {
           } else {
             this.$message.error(msg)
           }
+        })
+      })
+    },
+    showEditDialog (user) {
+      this.editDialogVisible = true
+      // console.log(user)
+      // this.editForm.id = user.id
+      // this.editForm.email = user.email
+      // this.editForm.mobile = user.mobile
+      this.editForm = { ...user }
+    },
+    editUser () {
+      this.$refs.editForm.validate(valid => {
+        if (!valid) return false
+        // 成功就发送ajax请求
+        const { id, email, mobile } = this.editForm
+        this.axios.put(`users/${id}`, { email, mobile }).then(res => {
+          // console.log(res)
+          const { status, msg } = res.data
+          if (status === 200) {
+            this.$message.success('修改成功')
+          } else {
+            this.$meaasge.error(msg)
+          }
+          // 重置表单
+          this.$refs.editForm.resetFields()
+          // 修改成功,模态框隐藏
+          this.editDialogVisible = false
+          // 更新当前页
+          this.getUrlList()
         })
       })
     }
