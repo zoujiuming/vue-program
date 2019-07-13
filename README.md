@@ -63,3 +63,5 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
         return Promise.reject(error)
       })
     ```
+### 7.13更新 
+  增加了增加信息和修改信息以及回调的优化      
