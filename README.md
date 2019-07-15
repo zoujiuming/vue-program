@@ -65,3 +65,5 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     ```
 ### 7.13更新 
   增加了增加信息和修改信息以及回调的优化      
+### 7.15更新  
+  增加了权限管理模块
