@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Login from './components/Login.vue'
 import Index from './components/Index.vue'
 import Users from './components/Users.vue'
+import Rights from './components/Rights.vue'
 Vue.use(VueRouter)
 
 const router = new VueRouter({
@@ -12,7 +13,8 @@ const router = new VueRouter({
       component: Index,
       name: 'index',
       children: [
-        { path: '/users', name: 'users', component: Users }
+        { path: '/users', name: 'users', component: Users },
+        { path: '/rights', name: 'rights', component: Rights }
       ] },
     { path: '/login', component: Login, name: 'login' }
   ]
