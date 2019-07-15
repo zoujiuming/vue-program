@@ -6,7 +6,7 @@
 <el-breadcrumb-item>权限管理</el-breadcrumb-item>
 </el-breadcrumb>
     <!-- main内容 -->
-    <template>
+
   <el-table
     ref="singleTable"
     :data="rightList"
@@ -33,7 +33,7 @@
       </template>
     </el-table-column>
   </el-table>
-</template>
+
   </div>
 </template>
 

@@ -15,5 +15,12 @@
  #app {
   height: 100%;
 }
-
+  #app {
+    .el-breadcrumb {
+      padding-left: 10px;
+      height: 40px;
+      line-height: 40px;
+      background-color: #ddd;
+    }
+  }
 </style>
