@@ -46,7 +46,7 @@
         label="操作">
         <template v-slot:default="{row}">
           <el-button @click="showEditDialog(row)" type="primary" icon="el-icon-edit" circle plain  size="small" ></el-button>
-          <el-button @click="deleteUser(row.id)" type="danger" icon="el-icon-delete" circle plain size="small" ></el-button>
+          <el-button @click="deleteUser(row.id,$event)" type="danger" icon="el-icon-delete" circle plain size="small" ></el-button>
            <el-button type="success" icon="el-icon-edit"  plain size="small" round >分配角色</el-button>
         </template>
       </el-table-column>
@@ -198,7 +198,9 @@ export default {
       this.pagenum = 1
       this.getUrlList()
     },
-    async deleteUser (id) {
+    async deleteUser (id, e) {
+      // 获取到了点击的那个按钮
+      // console.log(e.target)
       try {
         await this.$confirm('你确定要删除吗?', '温馨提示', {
           type: 'warning'
@@ -215,6 +217,8 @@ export default {
       } catch (e) {
         this.$message('操作取消')
       }
+      // 失去焦点
+      e.target.blur()
     },
     async changeState ({ id, mg_state: state }) {
       const res = await this.axios.put(`users/${id}/state/${state}`)
