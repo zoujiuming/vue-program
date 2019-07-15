@@ -37,10 +37,30 @@
     <template v-slot:default="{row}">
           <el-button @click="showEditDialog(row)" type="primary" icon="el-icon-edit" circle plain  size="small" ></el-button>
           <el-button @click="deleteUser(row.id,$event)" type="danger" icon="el-icon-delete" circle plain size="small" ></el-button>
-           <el-button type="success" icon="el-icon-edit"  plain size="small" round >分配角色</el-button>
+           <el-button @click="showAssignDialog(row)" type="success" icon="el-icon-edit"  plain size="small" round >分配角色</el-button>
         </template>
     </el-table-column>
   </el-table>
+  <!-- 分配权限的对话框 -->
+  <el-dialog
+  title="分配权限"
+  :visible.sync="dialogVisible"
+  width="35 %"
+>
+  <!-- 树形菜单  -->
+  <el-tree
+  ref="tree"
+  :data="rightsList"
+  show-checkbox
+  node-key="id"
+  default-expand-all
+  :props="defaultProps">
+</el-tree>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary">确 定</el-button>
+  </span>
+</el-dialog>
   </div>
 </template>
 
@@ -48,7 +68,14 @@
 export default {
   data () {
     return {
-      rolesList: []
+      rolesList: [],
+      dialogVisible: false,
+      rightsList: [],
+      // 指定树形控件如何显示
+      defaultProps: {
+        children: 'children',
+        label: 'authName'
+      }
     }
   },
   created () {
@@ -58,7 +85,6 @@ export default {
     async getRoleslist () {
       const { meta, data } = await this.axios.get('roles')
       if (meta.status === 200) {
-
       }
       // console.log(data)
       this.rolesList = data
@@ -74,6 +100,26 @@ export default {
       } else {
         this.$message.error(msg)
       }
+    },
+    async showAssignDialog (row) {
+      this.dialogVisible = true
+      // 发送ajaax请求
+      const { meta, data } = await this.axios.get('rights/tree')
+      if (meta.status === 200) {
+        this.rightsList = data
+        // console.log(this.rightsList)
+      }
+      // 让拥有的权限默认选中
+      // this.$refs.tree.setCheckedKeys([101])
+      let ids = []
+      row.children.forEach(lv1 => {
+        lv1.children.forEach(lv2 => {
+          lv2.children.forEach(lv3 => {
+            ids.push(lv3.id)
+          })
+        })
+      })
+      this.$refs.tree.setCheckedKeys(ids)
     }
   }
 }
