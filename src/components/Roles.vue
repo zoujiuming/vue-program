@@ -11,18 +11,19 @@
   >
   <el-table-column type="expand">
       <template v-slot:default="{ row }">
+        <span v-show="row.children.length ===0 ">该角色没有更多的权限信息</span>
         <!-- 存一级权限 -->
         <el-row class="lv1" v-for="lv1 in row.children" :key="lv1.id">
           <el-col :span="4">
-            <el-tag   closable>{{lv1.authName}}</el-tag>
+            <el-tag @close="delRight(row,lv1.id)"  closable>{{lv1.authName}}</el-tag>
             </el-col>
           <el-col :span="20">
         <!-- 存二级权限 -->
           <el-row class="lv2" v-for="lv2 in lv1.children" :key="lv2.id">
-           <el-col :span="4"><el-tag   closable  type="success">{{lv2.authName}}</el-tag></el-col>
+           <el-col :span="4"><el-tag @close="delRight(row,lv2.id)"  closable  type="success">{{lv2.authName}}</el-tag></el-col>
            <el-col :span="20">
         <!-- 存三级权限 -->
-              <el-tag class="lv3"  closable  type="warning" v-for="lv3 in lv2.children" :key="lv3.id">{{lv3.authName}}</el-tag>
+              <el-tag @close="delRight(row,lv3.id)" class="lv3"  closable  type="warning" v-for="lv3 in lv2.children" :key="lv3.id">{{lv3.authName}}</el-tag>
            </el-col>
           </el-row>
           </el-col>
@@ -59,8 +60,20 @@ export default {
       if (meta.status === 200) {
 
       }
-      console.log(data)
+      // console.log(data)
       this.rolesList = data
+    },
+    async delRight (row, rightId) {
+      console.log(row, rightId)
+      const res = await this.axios.delete(`roles/${row.id}/rights/${rightId}`)
+      const { status, msg } = res.meta
+      if (status === 200) {
+        this.$message.success(msg)
+        // 更新,不需要全部更新 只更新data部分
+        row.children = res.data
+      } else {
+        this.$message.error(msg)
+      }
     }
   }
 }
