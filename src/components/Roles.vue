@@ -58,7 +58,7 @@
 </el-tree>
   <span slot="footer" class="dialog-footer">
     <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary">确 定</el-button>
+    <el-button  @click="assignRight" type="primary">确 定</el-button>
   </span>
 </el-dialog>
   </div>
@@ -75,7 +75,9 @@ export default {
       defaultProps: {
         children: 'children',
         label: 'authName'
-      }
+      },
+      // 当前id
+      roleId: ''
     }
   },
   created () {
@@ -103,6 +105,8 @@ export default {
     },
     async showAssignDialog (row) {
       this.dialogVisible = true
+      // 拿到当前id
+      this.roleId = row.id
       // 发送ajaax请求
       const { meta, data } = await this.axios.get('rights/tree')
       if (meta.status === 200) {
@@ -120,6 +124,24 @@ export default {
         })
       })
       this.$refs.tree.setCheckedKeys(ids)
+    },
+    async assignRight () {
+      // 获取到所有的选中的权限id
+      let ids = this.$refs.tree.getCheckedKeys()
+      let half = this.$refs.tree.getHalfCheckedKeys()
+      // console.log(ids)
+      // console.log(half)
+      let rids = [ ...ids, ...half ].join()
+      const res = await this.axios.post(`roles/${this.roleId}/rights`, { rids })
+      const { status, msg } = res.meta
+      if (status === 200) {
+        // 隐藏对话框
+        this.dialogVisible = false
+        // 重新渲染页面
+        this.getRoleslist()
+      } else {
+        this.$message.error(msg)
+      }
     }
   }
 }
