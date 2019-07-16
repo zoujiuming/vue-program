@@ -13,42 +13,25 @@
     <el-container>
       <el-aside width="200px">
         <el-menu
+          :default-active="active"
           background-color="#545c64"
           text-color="#fff"
           active-text-color="#ffd04b"
           unique-opened
           router
         >
-          <el-submenu index="1">
+          <el-submenu v-for="menu in menusList" :key="menu.id" :index="menu.path">
             <template v-slot:title>
               <i class="el-icon-location"></i>
-              <span>用户管理</span>
+              <span>{{menu.authName}}</span>
             </template>
-            <el-menu-item-group>
-              <el-menu-item index="/users">
+            <el-menu-item-group >
+              <el-menu-item :index="item.path" v-for="item in menu.children" :key="item.id">
                 <i class="el-icon-menu"></i>
-                <span slot="title">用户列表</span>
+                <span slot="title">{{item.authName}}</span>
               </el-menu-item>
             </el-menu-item-group>
           </el-submenu>
-          <el-submenu index="2">
-        <template v-slot:title>
-          <i class="el-icon-location"></i>
-          <span>权限管理</span>
-        </template>
-        <el-menu-item-group>
-          <el-menu-item index="/roles">
-            <i class="el-icon-menu"></i>
-            <span>角色列表</span>
-          </el-menu-item>
-        </el-menu-item-group>
-        <el-menu-item-group>
-          <el-menu-item index="/rights">
-            <i class="el-icon-menu"></i>
-            <span>权限列表</span>
-          </el-menu-item>
-        </el-menu-item-group>
-      </el-submenu>
         </el-menu>
       </el-aside>
       <el-main>
@@ -60,6 +43,25 @@
 
 <script>
 export default {
+  data () {
+    return {
+      menusList: []
+    }
+  },
+  computed: {
+    active () {
+      return this.$route.path.slice(1)
+    }
+  },
+  // 一进入页面就获取到左侧菜单栏
+  async created () {
+    const res = await this.axios.get('menus')
+    if (res.meta.status === 200) {
+      this.menusList = res.data
+      console.log(this.menusList)
+      console.log(this.$route)
+    }
+  },
   methods: {
     logout () {
       // 给提示
