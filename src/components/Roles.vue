@@ -5,6 +5,8 @@
 <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
 <el-breadcrumb-item>角色管理</el-breadcrumb-item>
 </el-breadcrumb>
+<!-- 添加用户 -->
+<el-button @click="showAddDialog" type="success" style="margin-left:0px;" plain>添加用户</el-button>
     <!-- main内容 -->
   <el-table
   :data="rolesList"
@@ -36,7 +38,7 @@
     label="操作">
     <template v-slot:default="{row}">
           <el-button @click="showEditDialog(row)" type="primary" icon="el-icon-edit" circle plain  size="small" ></el-button>
-          <el-button @click="deleteUser(row.id,$event)" type="danger" icon="el-icon-delete" circle plain size="small" ></el-button>
+          <el-button @click="deleteRole(row,$event)" type="danger" icon="el-icon-delete" circle plain size="small" ></el-button>
            <el-button @click="showAssignDialog(row)" type="success" icon="el-icon-edit"  plain size="small" round >分配角色</el-button>
         </template>
     </el-table-column>
@@ -61,6 +63,25 @@
     <el-button  @click="assignRight" type="primary">确 定</el-button>
   </span>
 </el-dialog>
+ <!-- 添加框 和修改框复用-->
+<el-dialog
+  :title="title"
+  :visible.sync="editDialogVisible"
+  width="35%">
+<el-form ref="form" :rules="rules" :model="form" label-width="80px" status-icon>
+  <el-form-item label="角色名称" prop="roleName">
+    <el-input v-model="form.roleName" placeholder="请输入角色名称"></el-input>
+  </el-form-item>
+   <el-form-item label="角色描述" prop="roleDesc">
+    <el-input v-model="form.roleDesc" placeholder="请输入角色描述"></el-input>
+  </el-form-item>
+</el-form>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="editDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="editRole">确 定</el-button>
+  </span>
+</el-dialog>
+
   </div>
 </template>
 
@@ -77,7 +98,26 @@ export default {
         label: 'authName'
       },
       // 当前id
-      roleId: ''
+      roleId: '',
+      editDialogVisible: false,
+      form: {
+        id: '',
+        roleName: '',
+        roleDesc: ''
+      },
+      rules: {
+        roleName: [
+          { required: true, message: '请输入角色名称', trigger: ['blur'] }
+        ],
+        roleDesc: [
+          { required: true, message: '请输入角色描述', trigger: ['blur'] }
+        ]
+      }
+    }
+  },
+  computed: {
+    title () {
+      return this.form.id ? '修改角色' : '添加角色'
     }
   },
   created () {
@@ -141,6 +181,71 @@ export default {
         this.getRoleslist()
       } else {
         this.$message.error(msg)
+      }
+    },
+    async deleteRole (row, e) {
+      try {
+        await this.$confirm('你确定要删除吗?', '温馨提示', {
+          type: 'warning'
+        })
+        // 点击确定发送ajax
+        const res = await this.axios.delete(`roles/${row.id}`)
+        // console.log(res)
+        const { status, msg } = res.meta
+        if (status === 200) {
+          // 成功提示
+          this.$message.success(msg)
+          // 刷新页面
+          this.getRoleslist()
+        }
+      } catch (e) {
+        this.$message('操作取消')
+      } finally {
+        let current = e.target
+        if (e.target.nodeName === 'I') {
+          current = e.target.parentNode
+        }
+        current.blur()
+      }
+    },
+    showAddDialog () {
+      this.editDialogVisible = true
+      this.form.id = ''
+      this.form.roleName = ''
+      this.form.roleDesc = ''
+    },
+    showEditDialog (row) {
+      this.editDialogVisible = true
+      this.form.id = row.id
+      this.form.roleName = row.roleName
+      this.form.roleDesc = row.roleDesc
+    },
+    async editRole () {
+      try {
+      // 点击确定进行表单校验
+        this.$refs.form.validate()
+        // 发送ajax请求  根据id判断是添加还是修改
+        //  添加角色
+        // 请求路径：roles
+        // 请求方法：post
+        const { id } = this.form
+        let method = id ? 'put' : 'post'
+        let url = id ? `roles/${id}` : 'roles'
+        let code = id ? 200 : 201
+        //  axios不能直接 axios.method
+        const res = await this.axios[method](url, this.form)
+        const { status, msg } = res.meta
+        if (status === code) {
+          this.$message.success(msg)
+          // 隐藏对话框
+          this.editDialogVisible = false
+          // 刷新页面
+          this.getRoleslist()
+        } else {
+          this.$message.error(msg)
+        }
+      } catch {
+        return false
       }
     }
   }
