@@ -47,7 +47,7 @@
         <template v-slot:default="{row}">
           <el-button @click="showEditDialog(row)" type="primary" icon="el-icon-edit" circle plain  size="small" ></el-button>
           <el-button @click="deleteUser(row.id,$event)" type="danger" icon="el-icon-delete" circle plain size="small" ></el-button>
-           <el-button type="success" icon="el-icon-edit"  plain size="small" round >分配角色</el-button>
+           <el-button @click="showAssignDialog(row)" type="success" icon="el-icon-edit"  plain size="small" round >分配角色</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -110,6 +110,32 @@
     <el-button type="primary" @click="editUser">确 定</el-button>
   </span>
 </el-dialog>
+<!-- 分配角色框  -->
+<el-dialog
+  title="修改用户"
+  :visible.sync="assignDialogVisible"
+  width="35%"
+>
+<el-form ref="assignForm" :model="assignForm" label-width="80px" status-icon>
+  <el-form-item label="用户名" prop="username">
+    <el-tag type="info">{{assignForm.username}}</el-tag>
+  </el-form-item>
+   <el-form-item label="角色列表"  prop="">
+    <el-select v-model="assignForm.rid" placeholder="请选择">
+    <el-option
+    v-for="item in rolesList"
+    :key="item.id "
+    :label="item.roleName"
+    :value="item.id">
+    </el-option>
+  </el-select>
+  </el-form-item>
+</el-form>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="assignDialogVisible = false">取 消</el-button>
+    <el-button @click="assginRole" type="primary">确 定</el-button>
+  </span>
+</el-dialog>
 </div>
 </template>
 
@@ -153,7 +179,14 @@ export default {
         password: '',
         email: '',
         mobile: ''
-      }
+      },
+      assignDialogVisible: false,
+      assignForm: {
+        id: '',
+        username: '',
+        rid: ''
+      },
+      rolesList: []
     }
   },
   created () {
@@ -178,7 +211,7 @@ export default {
             this.tableData = data.users
             this.total = data.total
           }
-          console.log(res)
+          // console.log(res)
         })
         .catch(error => {
           console.log(error)
@@ -209,7 +242,7 @@ export default {
         if (res.meta.status === 200) {
           this.$message.success('删除成功')
           // 如果当前页被删除就剩下一条了,应该让pagenum -1
-          if (this.tableData === 1 && this.pagenum > 1) {
+          if (this.tableData.length === 1 && this.pagenum > 1) {
             this.pagenum--
           }
           this.getUrlList()
@@ -243,6 +276,8 @@ export default {
           this.$refs.addForm.resetFields()
           // 对话框隐藏
           this.addDialogVisible = false
+          // 刷新
+          this.getUrlList()
         } else {
           this.$message.error(msg)
         }
@@ -279,6 +314,38 @@ export default {
         }
       } catch (e) {
         return false
+      }
+    },
+    async showAssignDialog (row) {
+      this.assignDialogVisible = true
+      this.assignForm.username = row.username
+      this.assignForm.id = row.id
+      // 回显角色id
+      const userRes = await this.axios.get(`users/${row.id}`)
+      if (userRes.meta.status === 200) {
+        this.assignForm.rid = userRes.data.rid === -1 ? '' : userRes.data.rid
+      }
+      // 发送ajax 拿到角色列表
+      const res = await this.axios.get('roles')
+      if (res.meta.status === 200) {
+        this.rolesList = res.data
+      }
+    },
+    async assginRole () {
+      // 验证新用户没有输入角色
+      if (!this.assignForm.rid) {
+        return this.$message.error('请选择一个角色')
+      }
+      // 发送ajax请求
+      const res = await this.axios.put(`users/${this.assignForm.id}/role`, this.assignForm)
+      // console.log(res)
+      const { status, msg } = res.meta
+      if (status === 200) {
+        this.$message.success(msg)
+        // 模态框隐藏
+        this.assignDialogVisible = false
+      } else {
+        this.$message.error(msg)
       }
     }
   }
