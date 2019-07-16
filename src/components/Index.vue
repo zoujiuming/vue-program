@@ -58,8 +58,8 @@ export default {
     const res = await this.axios.get('menus')
     if (res.meta.status === 200) {
       this.menusList = res.data
-      console.log(this.menusList)
-      console.log(this.$route)
+      // console.log(this.menusList)
+      // console.log(this.$route)
     }
   },
   methods: {
