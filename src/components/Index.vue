@@ -50,7 +50,7 @@ export default {
   },
   computed: {
     active () {
-      return this.$route.path.slice(1)
+      return this.$route.path.slice(1).split('-')[0]
     }
   },
   // 一进入页面就获取到左侧菜单栏

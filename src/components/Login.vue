@@ -47,7 +47,7 @@ export default {
       try {
         await this.$refs.form.validate()
         const res = await this.axios.post('login', this.form)
-        const { meta: { status, msg }, data: { token } } = res.data
+        const { meta: { status, msg }, data: { token } } = res
         if (status === 200) {
           console.log('登录成功')
           this.$message({

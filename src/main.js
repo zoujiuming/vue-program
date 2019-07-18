@@ -1,12 +1,22 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+// require styles
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 import App from './App.vue'
 import router from './router'
-
+import moment from 'moment'
 import axios from 'axios'
 import ElTreeGrid from 'element-tree-grid'
+import VueQuillEditor from 'vue-quill-editor'
+// 定义一个全局过滤器
+Vue.filter('dateFilter', function (value) {
+  return moment(value * 1000).format('YYYY-MM-DD hh:mm:ss')
+})
 Vue.component(ElTreeGrid.name, ElTreeGrid)
+
 // vue强行和axios添加关系
 Vue.prototype.axios = axios
 // 设置axios全局默认的BASE-URL， 只要设置了全局的默认base_url，以后的请求会自动拼接上base_url
@@ -34,6 +44,7 @@ axios.interceptors.response.use(function (response) {
 })
 
 Vue.use(ElementUI)
+Vue.use(VueQuillEditor /* { default global options } */)
 
 Vue.config.productionTip = false
 

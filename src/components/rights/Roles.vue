@@ -213,12 +213,19 @@ export default {
       this.form.id = ''
       this.form.roleName = ''
       this.form.roleDesc = ''
+      // 重置表单的校验规则
+      this.$nextTick(() => {
+        this.$refs.form.clearValidate()
+      })
     },
     showEditDialog (row) {
       this.editDialogVisible = true
       this.form.id = row.id
       this.form.roleName = row.roleName
       this.form.roleDesc = row.roleDesc
+      this.$nextTick(() => {
+        this.$refs.form.clearValidate()
+      })
     },
     async editRole () {
       try {
