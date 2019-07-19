@@ -1,7 +1,7 @@
 <template>
   <div class="goods">
     <!-- 添加商品按钮 -->
-      <el-button type="success" plain @click="$router.push('/add')">添加商品</el-button>
+      <el-button type="success" plain @click="$router.push('/goods-add')">添加商品</el-button>
       <!-- main -->
        <el-table :data="goodsList" v-loading="loading">
     <el-table-column

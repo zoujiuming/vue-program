@@ -41,11 +41,13 @@
     <el-tab-pane name="tab1" label="商品图片">
         <el-upload
         :on-success="handleSuccess"
+        multiple
       action="http://localhost:8888/api/private/v1/upload"
+      :headers="headers"
       list-type="picture-card"
     >
         <i slot="default" class="el-icon-plus"></i>
-        <div slot="file" slot-scope="{file}">
+        <div slot="file" slot-scope="{file,fileList}">
           <img
             class="el-upload-list__item-thumbnail"
             :src="file.url" alt=""
@@ -60,20 +62,16 @@
             <span
               v-if="!disabled"
               class="el-upload-list__item-delete"
-              @click="handleDownload(file)"
-            >
-              <i class="el-icon-download"></i>
-            </span>
-            <span
-              v-if="!disabled"
-              class="el-upload-list__item-delete"
-              @click="handleRemove(file)"
+              @click="handleRemove(file,fileList)"
             >
               <i class="el-icon-delete"></i>
             </span>
           </span>
         </div>
     </el-upload>
+    <el-dialog :visible.sync="dialogVisible">
+    <img width="100%" :src="dialogImageUrl" alt="">
+    </el-dialog>
       <el-button type="primary" @click="next">下一步</el-button>
     </el-tab-pane>
     <el-tab-pane name="tab2" label="角色管理">
@@ -99,10 +97,10 @@ export default {
   },
   data () {
     return {
+      fileList: [],
       headers: {
         Authorization: localStorage.getItem('token')
       },
-      disabled: false,
       active: 0,
       activeTab: 'tab0',
       form: {
@@ -121,7 +119,10 @@ export default {
         label: 'cat_name',
         value: 'cat_id',
         children: 'children'
-      }
+      },
+      disabled: false,
+      dialogImageUrl: '',
+      dialogVisible: false
     }
   },
   methods: {
@@ -135,18 +136,26 @@ export default {
       console.log(tab.index)
       this.active = +tab.index
     },
+    handleRemove (file, fileList) {
+      // console.log(fileList)
+      // 1.根据file.uid找到fileList中对应文件的下标
+      const idx = this.fileList.findIndex(item => item.uid === file.id)
+      this.fileList.splice(idx, 1)
+      // 根据file找到pics中的下标
+      const path = file.response.data.tmp_path
+      const idx2 = this.form.pics.findIndex(item => item.pic === path)
+      this.form.pics.splice(idx2, 1)
+    },
     handlePictureCardPreview (file) {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
-    },
-    handleDownload (file) {
-      console.log(file)
     },
     handleSuccess (res, file, fileList) {
       if (res.meta.status === 200) {
         this.form.pics.push({
           pic: res.data.tmp_path
         })
+        this.fileList = fileList
       }
     },
     async addGood () {

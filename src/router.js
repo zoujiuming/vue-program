@@ -22,7 +22,7 @@ const router = new VueRouter({
         { path: '/roles', name: 'roles', component: Roles },
         { path: '/categories', name: 'categories', component: Categories },
         { path: '/goods', name: 'goods', component: Goods },
-        { path: '/add', name: 'add', component: Add }
+        { path: '/goods-add', name: 'goods-add', component: Add }
       ] },
     { path: '/login', component: Login, name: 'login' }
   ]
