@@ -1,13 +1,14 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Login from './components/Login.vue'
-import Index from './components/Index.vue'
-import Users from './components/users/Users.vue'
-import Rights from './components/rights/Rights.vue'
-import Roles from './components/rights/Roles.vue'
-import Categories from './components/products/Categories.vue'
-import Goods from './components/products/Goods.vue'
-import Add from './components/products/Add.vue'
+const Login = () => import(/* webpackChunkName: 'index' */ './components/Login.vue')
+
+const Index = () => import(/* webpackChunkName: 'index' */ './components/Index.vue')
+const Users = () => import(/* webpackChunkName: 'users' */ './components/users/Users.vue')
+const Rights = () => import(/* webpackChunkName: 'rights' */'./components/rights/Rights.vue')
+const Roles = () => import(/* webpackChunkName: 'rights' */'./components/rights/Roles.vue')
+const Categories = () => import(/* webpackChunkName: 'products' */'./components/products/Categories.vue')
+const Goods = () => import(/* webpackChunkName: 'products' */'./components/products/Goods.vue')
+const Add = () => import(/* webpackChunkName: 'products' */'./components/products/Add.vue')
 Vue.use(VueRouter)
 
 const router = new VueRouter({
