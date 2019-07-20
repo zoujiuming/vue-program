@@ -74,7 +74,8 @@ export default {
 .login {
   widows: 100%;
   height: 100%;
-  background-color: #2d434c;
+  // background-color: #2d434c;
+  background:url('../assets/login.jpg')   center center ;
   overflow: hidden;
   .el-form {
     width: 400px;
